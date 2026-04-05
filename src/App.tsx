@@ -7,6 +7,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useInView } from 'motion/react';
 import videoSrc from './corelacao.mp4';
 import logoImg from './logo.png';
+import media1 from './media1.jpeg';
+import media2 from './media2.jpeg';
+import media3 from './media3.jpeg';
 import { 
   TrendingUp, 
   CheckCircle2, 
@@ -22,11 +25,247 @@ import {
   Award,
   Clock,
   BookOpen,
-  MessageCircle
+  MessageCircle,
+  Mail,
+  Phone,
+  User
 } from 'lucide-react';
 import { cn } from './lib/utils';
 
 // --- Components ---
+
+const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
+  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
+  const [errors, setErrors] = useState({ email: '', phone: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validatePhone = (phone: string) => {
+    const cleanPhone = phone.replace(/\D/g, '');
+    return cleanPhone.length >= 10 && cleanPhone.length <= 11;
+  };
+
+  const formatPhone = (value: string) => {
+    const numbers = value.replace(/\D/g, '');
+    if (numbers.length <= 2) return numbers;
+    if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    const emailValid = validateEmail(formData.email);
+    const phoneValid = validatePhone(formData.phone);
+
+    setErrors({
+      email: emailValid ? '' : 'E-mail inválido',
+      phone: phoneValid ? '' : 'Telefone inválido (DDD + Número)',
+    });
+
+    if (emailValid && phoneValid && formData.name.length > 2) {
+      setIsSubmitting(true);
+      
+      try {
+        // Envio para Google Sheets (Webhook)
+        const webhookUrl = import.meta.env.VITE_GOOGLE_SHEET_WEBHOOK_URL;
+        if (webhookUrl) {
+          await fetch(webhookUrl, {
+            method: 'POST',
+            mode: 'no-cors', // Necessário para Google Apps Script
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: formData.name,
+              email: formData.email,
+              phone: formData.phone,
+              date: new Date().toISOString()
+            })
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao enviar para planilha:", error);
+      }
+
+      setTimeout(() => {
+        localStorage.setItem('lead_captured', 'true');
+        localStorage.setItem('timer_expiry', (Date.now() + 180000).toString());
+        onComplete();
+      }, 1000);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950 px-6">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-emerald-500/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-emerald-500/10 blur-[120px] rounded-full" />
+      </div>
+
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-md bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-8 rounded-3xl shadow-2xl relative z-10"
+      >
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+            <img src={logoImg} alt="Logo" className="w-10 h-10 object-contain" />
+          </div>
+          <h2 className="text-2xl font-black text-white mb-2">Acesso Exclusivo</h2>
+          <p className="text-zinc-400">Preencha os dados abaixo para liberar o conteúdo da mentoria.</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-zinc-400 mb-1.5 ml-1">Nome Completo</label>
+            <div className="relative">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+              <input 
+                required
+                type="text"
+                placeholder="Seu nome aqui"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full bg-zinc-800/50 border border-zinc-700 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-zinc-400 mb-1.5 ml-1">E-mail</label>
+            <div className="relative">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+              <input 
+                required
+                type="email"
+                placeholder="exemplo@email.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className={cn(
+                  "w-full bg-zinc-800/50 border rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all",
+                  errors.email ? "border-red-500/50 ring-1 ring-red-500/20" : "border-zinc-700"
+                )}
+              />
+            </div>
+            {errors.email && <p className="text-red-400 text-xs mt-1.5 ml-1">{errors.email}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-zinc-400 mb-1.5 ml-1">WhatsApp</label>
+            <div className="relative">
+              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+              <input 
+                required
+                type="tel"
+                placeholder="(00) 00000-0000"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
+                className={cn(
+                  "w-full bg-zinc-800/50 border rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all",
+                  errors.phone ? "border-red-500/50 ring-1 ring-red-500/20" : "border-zinc-700"
+                )}
+              />
+            </div>
+            {errors.phone && <p className="text-red-400 text-xs mt-1.5 ml-1">{errors.phone}</p>}
+          </div>
+
+          <button 
+            disabled={isSubmitting}
+            type="submit"
+            className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
+          >
+            {isSubmitting ? (
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                ACESSAR AGORA
+                <ArrowRight className="w-5 h-5" />
+              </>
+            )}
+          </button>
+        </form>
+        
+        <p className="text-center text-[10px] text-zinc-500 mt-6 uppercase tracking-widest">
+          Ambiente 100% Seguro e Privado
+        </p>
+      </motion.div>
+    </div>
+  );
+};
+
+const CountdownTimer = () => {
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const expiry = localStorage.getItem('timer_expiry');
+      if (!expiry) {
+        setTimeLeft(null);
+        return;
+      }
+      const now = Date.now();
+      const diff = Math.max(0, parseInt(expiry, 10) - now);
+      setTimeLeft(diff);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 10);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (timeLeft === null) return null;
+
+  const minutes = Math.floor(timeLeft / 60000);
+  const seconds = Math.floor((timeLeft % 60000) / 1000);
+  const ms = Math.floor((timeLeft % 1000) / 10);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ 
+        opacity: 1, 
+        y: 0,
+        scale: [1, 1.02, 1],
+      }}
+      transition={{
+        scale: {
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }
+      }}
+      className="flex flex-col items-center mt-6"
+    >
+      <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
+        Oferta expira em:
+      </span>
+      <div className="flex gap-2">
+        <div className="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl min-w-[50px] shadow-xl">
+          <span className="text-2xl font-black text-white tabular-nums">
+            {minutes.toString().padStart(2, '0')}
+          </span>
+          <span className="block text-[8px] text-zinc-500 uppercase font-bold text-center mt-0.5">Min</span>
+        </div>
+        <span className="text-2xl font-black text-emerald-500 self-center">:</span>
+        <div className="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl min-w-[50px] shadow-xl">
+          <span className="text-2xl font-black text-white tabular-nums">
+            {seconds.toString().padStart(2, '0')}
+          </span>
+          <span className="block text-[8px] text-zinc-500 uppercase font-bold text-center mt-0.5">Seg</span>
+        </div>
+        <span className="text-2xl font-black text-emerald-500 self-center">:</span>
+        <div className="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl min-w-[50px] shadow-xl">
+          <span className="text-2xl font-black text-emerald-400 tabular-nums">
+            {ms.toString().padStart(2, '0')}
+          </span>
+          <span className="block text-[8px] text-zinc-500 uppercase font-bold text-center mt-0.5">Ms</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
 
 const Button = ({ 
   children, 
@@ -129,17 +368,32 @@ const FAQItem = ({ question, answer }: { question: string; answer: string }) => 
 // --- Main App ---
 
 export default function App() {
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [timerActive, setTimerActive] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const isVideoInView = useInView(videoRef, { amount: 0.5 });
 
   useEffect(() => {
-    if (isVideoInView && videoRef.current) {
+    const captured = localStorage.getItem('lead_captured');
+    if (captured === 'true') {
+      setIsAuthorized(true);
+      const expiry = localStorage.getItem('timer_expiry');
+      // If authorized but no timer OR timer expired, start/reset it now
+      if (!expiry || parseInt(expiry, 10) <= Date.now()) {
+        localStorage.setItem('timer_expiry', (Date.now() + 300000).toString());
+      }
+      setTimerActive(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthorized && isVideoInView && videoRef.current) {
       videoRef.current.play().catch(err => console.log("Autoplay blocked:", err));
     } else if (videoRef.current) {
       videoRef.current.pause();
     }
-  }, [isVideoInView]);
+  }, [isVideoInView, isAuthorized]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -156,8 +410,19 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
-      
-      {/* Header */}
+      <AnimatePresence>
+        {!isAuthorized && (
+          <LeadForm onComplete={() => {
+            setIsAuthorized(true);
+            setTimerActive(true);
+            localStorage.setItem('timer_expiry', (Date.now() + 300000).toString());
+          }} />
+        )}
+      </AnimatePresence>
+
+      {isAuthorized && (
+        <>
+          {/* Header */}
       <header className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between",
         scrolled ? "bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800" : "bg-transparent"
@@ -224,14 +489,16 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4"
+              className="flex flex-col items-center justify-center"
             >
-              <a href={salesLink} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button size="xl" className="w-full group">
-                  Quero Garantir Minha Vaga
-                  <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </a>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+                <a href={salesLink} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                  <Button size="xl" className="w-full group">
+                    Quero Garantir Minha Vaga
+                    <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                </a>
+              </div>
             </motion.div>
 
             {/* Video Section */}
@@ -249,7 +516,7 @@ export default function App() {
                   controls
                   muted
                   playsInline
-                  poster="https://images.unsplash.com/photo-1611974717535-7c809af05bd7?q=80&w=2070&auto=format&fit=crop"
+                  poster={media3}
                 >
                   <source src={videoSrc} type="video/mp4" />
                   Seu navegador não suporta o elemento de vídeo.
@@ -322,6 +589,8 @@ export default function App() {
                   <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12" />
                 </Button>
               </a>
+              
+              <CountdownTimer />
               
               <p className="mt-8 text-zinc-500 text-sm font-medium">
                 Acesso imediato após a confirmação do pagamento.
@@ -416,8 +685,8 @@ export default function App() {
                 className="relative z-10 rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl"
               >
                 <img 
-                  src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=2070&auto=format&fit=crop" 
-                  alt="Trading Chart" 
+                  src={media3} 
+                  alt="Operação Real" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -530,6 +799,80 @@ export default function App() {
         </div>
       </section>
 
+      {/* Spreadsheet Showcase Section */}
+      <section className="py-24 bg-zinc-950 relative overflow-hidden">
+        <div className="container mx-auto px-6 relative z-10">
+          <SectionTitle light subtitle="Visualize o mercado como os profissionais. Nossa planilha exclusiva entrega os pontos exatos de entrada.">
+            Nossa Ferramenta de <span className="text-emerald-500">Elite</span>
+          </SectionTitle>
+
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <div className="rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
+                <img src={media1} alt="Planilha de Correlação 1" className="w-full h-auto" referrerPolicy="no-referrer" />
+              </div>
+              <p className="text-zinc-500 text-sm text-center italic">Monitoramento em tempo real dos setores e correlações.</p>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-6"
+            >
+              <div className="rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
+                <img src={media2} alt="Planilha de Correlação 2" className="w-full h-auto" referrerPolicy="no-referrer" />
+              </div>
+              <p className="text-zinc-500 text-sm text-center italic">Confirmações visuais de força e exaustão do preço.</p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-24 bg-zinc-900/30">
+        <div className="container mx-auto px-6">
+          <SectionTitle light subtitle="O que dizem os alunos que já aplicam o método de correlação.">
+            Depoimentos de <span className="text-emerald-500">Alunos</span>
+          </SectionTitle>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: "Carlos Silva", comment: "Finalmente entendi por que o mercado se movia contra mim. A planilha de correlação mudou meu jogo." },
+              { name: "Ana Oliveira", comment: "Método direto e sem enrolação. Consistência que eu não encontrava em nenhum outro curso." },
+              { name: "Ricardo Santos", comment: "O suporte e a planilha ao vivo são o grande diferencial. Vale cada centavo do investimento." },
+              { name: "Juliana Costa", comment: "Operar Mini Índice ficou muito mais claro depois que aprendi a ler o fluxo institucional." }
+            ].map((item, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="p-8 rounded-2xl bg-zinc-900 border border-zinc-800 flex flex-col h-full"
+              >
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-emerald-500 text-emerald-500" />
+                  ))}
+                </div>
+                <p className="text-zinc-400 text-sm leading-relaxed mb-6 flex-grow italic">
+                  "{item.comment}"
+                </p>
+                <div className="font-bold text-white text-sm uppercase tracking-wider">
+                  {item.name}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="py-24 bg-zinc-950">
         <div className="container mx-auto px-6 max-w-3xl">
@@ -616,6 +959,8 @@ export default function App() {
         </motion.span>
       </div>
 
+        </>
+      )}
     </div>
   );
 }
