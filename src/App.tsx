@@ -10,6 +10,7 @@ import logoImg from './logo.png';
 import media1 from './media1.jpeg';
 import media2 from './media2.jpeg';
 import media3 from './media3.jpeg';
+import media4 from './media4.jpeg';
 import { 
   TrendingUp, 
   CheckCircle2, 
@@ -35,13 +36,9 @@ import { cn } from './lib/utils';
 // --- Components ---
 
 const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
-  const [formData, setFormData] = useState({ name: '', email: '', phone: '' });
-  const [errors, setErrors] = useState({ email: '', phone: '' });
+  const [formData, setFormData] = useState({ name: '', alreadyOperates: '', phone: '' });
+  const [errors, setErrors] = useState({ alreadyOperates: '', phone: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
 
   const validatePhone = (phone: string) => {
     const cleanPhone = phone.replace(/\D/g, '');
@@ -58,15 +55,15 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const emailValid = validateEmail(formData.email);
+    const alreadyOperatesValid = formData.alreadyOperates !== '';
     const phoneValid = validatePhone(formData.phone);
 
     setErrors({
-      email: emailValid ? '' : 'E-mail inválido',
+      alreadyOperates: alreadyOperatesValid ? '' : 'Selecione uma opção',
       phone: phoneValid ? '' : 'Telefone inválido (DDD + Número)',
     });
 
-    if (emailValid && phoneValid && formData.name.length > 2) {
+    if (alreadyOperatesValid && phoneValid && formData.name.length > 2) {
       setIsSubmitting(true);
       
       try {
@@ -79,7 +76,7 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               name: formData.name,
-              email: formData.email,
+              alreadyOperates: formData.alreadyOperates,
               phone: formData.phone,
               date: new Date().toISOString()
             })
@@ -113,8 +110,7 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
           <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
             <img src={logoImg} alt="Logo" className="w-10 h-10 object-contain" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-2">Acesso Exclusivo</h2>
-          <p className="text-zinc-400">Preencha os dados abaixo para liberar o conteúdo da mentoria.</p>
+          <h2 className="text-2xl font-black text-white mb-2 leading-tight">Preencha abaixo e eu te mostro o método." 🚀</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -134,22 +130,25 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1.5 ml-1">E-mail</label>
+            <label className="block text-sm font-medium text-zinc-400 mb-1.5 ml-1">Você já opera?</label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
-              <input 
+              <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+              <select 
                 required
-                type="email"
-                placeholder="exemplo@email.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                value={formData.alreadyOperates}
+                onChange={(e) => setFormData({ ...formData, alreadyOperates: e.target.value })}
                 className={cn(
-                  "w-full bg-zinc-800/50 border rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all",
-                  errors.email ? "border-red-500/50 ring-1 ring-red-500/20" : "border-zinc-700"
+                  "w-full bg-zinc-800/50 border rounded-2xl py-3.5 pl-12 pr-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all",
+                  errors.alreadyOperates ? "border-red-500/50 ring-1 ring-red-500/20" : "border-zinc-700"
                 )}
-              />
+              >
+                <option value="" disabled className="bg-zinc-900">Selecione uma opção</option>
+                <option value="sim" className="bg-zinc-900">Sim</option>
+                <option value="nao" className="bg-zinc-900">Não</option>
+              </select>
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
             </div>
-            {errors.email && <p className="text-red-400 text-xs mt-1.5 ml-1">{errors.email}</p>}
+            {errors.alreadyOperates && <p className="text-red-400 text-xs mt-1.5 ml-1">{errors.alreadyOperates}</p>}
           </div>
 
           <div>
@@ -705,21 +704,51 @@ export default function App() {
             O Que Você Vai <span className="text-emerald-500">Aprender</span>
           </SectionTitle>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { icon: <BookOpen />, title: "Fundamentos", desc: "A base sólida que todo trader consistente precisa ter." },
-              { icon: <TrendingUp />, title: "A Técnica", desc: "O passo a passo da nossa estratégia vencedora." },
-              { icon: <ShieldCheck />, title: "Risco", desc: "Como proteger seu capital e nunca quebrar a banca." },
-              { icon: <Users />, title: "Comunidade", desc: "Acesso ao grupo exclusivo de alunos para troca de experiências." }
-            ].map((item, i) => (
-              <div key={i} className="p-8 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 transition-all group">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-6 group-hover:scale-110 transition-transform">
-                  {item.icon}
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="grid sm:grid-cols-2 gap-6">
+              {[
+                { icon: <BookOpen />, title: "Fundamentos", desc: "A base sólida que todo trader consistente precisa ter." },
+                { icon: <TrendingUp />, title: "A Técnica", desc: "O passo a passo da nossa estratégia vencedora." },
+                { icon: <ShieldCheck />, title: "Risco", desc: "Como proteger seu capital e nunca quebrar a banca." },
+                { icon: <Users />, title: "Comunidade", desc: "Acesso ao grupo exclusivo de alunos para troca de experiências." }
+              ].map((item, i) => (
+                <div key={i} className="p-8 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 transition-all group">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-6 group-hover:scale-110 transition-transform">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-3">{item.title}</h3>
+                  <p className="text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="text-xl font-bold mb-3">{item.title}</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
+              ))}
+            </div>
+            
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="absolute -inset-4 bg-emerald-500/10 blur-3xl rounded-full" />
+              <div className="relative bg-zinc-900 rounded-3xl p-4 border border-zinc-800 shadow-2xl">
+                <div className="flex items-center gap-2 mb-4 px-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                    <div className="w-3 h-3 rounded-full bg-amber-500/50" />
+                    <div className="w-3 h-3 rounded-full bg-emerald-500/50" />
+                  </div>
+                  <div className="h-4 w-32 bg-zinc-800 rounded-full" />
+                </div>
+                <img 
+                  src={media4} 
+                  alt="Módulos do Curso" 
+                  className="w-full rounded-2xl border border-zinc-800"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute -bottom-6 -right-6 bg-emerald-500 text-white px-6 py-3 rounded-2xl font-black italic shadow-xl shadow-emerald-500/20">
+                  PLATAFORMA EXCLUSIVA
+                </div>
               </div>
-            ))}
+            </motion.div>
           </div>
         </div>
       </section>
@@ -843,10 +872,10 @@ export default function App() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: "Carlos Silva", comment: "Finalmente entendi por que o mercado se movia contra mim. A planilha de correlação mudou meu jogo." },
-              { name: "Ana Oliveira", comment: "Método direto e sem enrolação. Consistência que eu não encontrava em nenhum outro curso." },
-              { name: "Ricardo Santos", comment: "O suporte e a planilha ao vivo são o grande diferencial. Vale cada centavo do investimento." },
-              { name: "Juliana Costa", comment: "Operar Mini Índice ficou muito mais claro depois que aprendi a ler o fluxo institucional." }
+              { name: "GUSTAVO RIBEIRO", comment: "Bem objetivo. Peguei algumas ideias e já apliquei no meu operacional." },
+              { name: "CAMILA TEIXEIRA", comment: "Conteúdo direto e prático. Já senti diferença na forma de operar." },
+              { name: "LUCAS FERREIRA", comment: "Conteúdo bem estruturado. Facilitou minha análise antes das entradas." },
+              { name: "RAFAELA SOUZA", comment: "Curti a explicação. Pequenos detalhes melhoraram minha leitura do mercado." }
             ].map((item, i) => (
               <motion.div 
                 key={i}
