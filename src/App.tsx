@@ -110,7 +110,7 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
           <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
             <img src={logoImg} alt="Logo" className="w-10 h-10 object-contain" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-2 leading-tight">Preencha abaixo e eu te mostro o método." 🚀</h2>
+          <h2 className="text-2xl font-black text-white mb-2 leading-tight">Quer ver como o método funciona? Preencha abaixo e continue.</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
