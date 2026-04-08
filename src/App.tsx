@@ -110,10 +110,26 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
           <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
             <img src={logoImg} alt="Logo" className="w-10 h-10 object-contain" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-2 leading-tight">Você está a um passo de garantir sua condição especial</h2>
-          <p className="text-zinc-400 text-sm">
-            Preencha seus dados e libere <motion.span animate={{ scale: [1, 1.1, 1], color: ['#ef4444', '#f87171', '#ef4444'] }} transition={{ repeat: Infinity, duration: 1.5 }} className="font-bold">75% de desconto</motion.span>.
-          </p>
+          <h2 className="text-2xl font-black text-white mb-4 leading-tight">Você está a um passo de garantir sua condição especial</h2>
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 mb-2">
+            <p className="text-zinc-300 text-base font-medium mb-1">
+              Preencha seus dados e libere:
+            </p>
+            <motion.div 
+              animate={{ 
+                scale: [1, 1.05, 1],
+                textShadow: [
+                  "0 0 0px rgba(239, 68, 68, 0)",
+                  "0 0 20px rgba(239, 68, 68, 0.5)",
+                  "0 0 0px rgba(239, 68, 68, 0)"
+                ]
+              }} 
+              transition={{ repeat: Infinity, duration: 1.5 }} 
+              className="text-4xl md:text-5xl font-black text-red-500 tracking-tighter"
+            >
+              75% DE DESCONTO
+            </motion.div>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
