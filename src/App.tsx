@@ -88,7 +88,7 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
 
       setTimeout(() => {
         localStorage.setItem('lead_captured', 'true');
-        localStorage.setItem('timer_expiry', (Date.now() + 180000).toString());
+        localStorage.setItem('timer_expiry', (Date.now() + 600000).toString());
         onComplete();
       }, 1000);
     }
@@ -110,7 +110,10 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
           <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
             <img src={logoImg} alt="Logo" className="w-10 h-10 object-contain" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-2 leading-tight">Quer ver como o método funciona? Preencha abaixo e continue.</h2>
+          <h2 className="text-2xl font-black text-white mb-2 leading-tight">Você está a um passo de garantir sua condição especial</h2>
+          <p className="text-zinc-400 text-sm">
+            Preencha seus dados e libere <motion.span animate={{ scale: [1, 1.1, 1], color: ['#ef4444', '#f87171', '#ef4444'] }} transition={{ repeat: Infinity, duration: 1.5 }} className="font-bold">75% de desconto</motion.span>.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -266,6 +269,46 @@ const CountdownTimer = () => {
   );
 };
 
+const TopBannerTimer = () => {
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const expiry = localStorage.getItem('timer_expiry');
+      if (!expiry) {
+        setTimeLeft(null);
+        return;
+      }
+      const now = Date.now();
+      const diff = Math.max(0, parseInt(expiry, 10) - now);
+      setTimeLeft(diff);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (timeLeft === null) return null;
+
+  const minutes = Math.floor(timeLeft / 60000);
+  const seconds = Math.floor((timeLeft % 60000) / 1000);
+
+  return (
+    <motion.div 
+      animate={{ backgroundColor: ['#f59e0b', '#fbbf24', '#f59e0b'] }}
+      transition={{ duration: 2, repeat: Infinity }}
+      className="w-full py-2 px-4 flex items-center justify-center gap-2 text-zinc-900 font-bold text-sm md:text-base sticky top-0 z-[60]"
+    >
+      <Clock className="w-4 h-4 animate-pulse" />
+      <span>DESCONTO VÁLIDO POR:</span>
+      <span className="font-black tabular-nums">
+        {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
+      </span>
+    </motion.div>
+  );
+};
+
 const Button = ({ 
   children, 
   className, 
@@ -380,7 +423,7 @@ export default function App() {
       const expiry = localStorage.getItem('timer_expiry');
       // If authorized but no timer OR timer expired, start/reset it now
       if (!expiry || parseInt(expiry, 10) <= Date.now()) {
-        localStorage.setItem('timer_expiry', (Date.now() + 300000).toString());
+        localStorage.setItem('timer_expiry', (Date.now() + 600000).toString());
       }
       setTimerActive(true);
     }
@@ -393,212 +436,186 @@ export default function App() {
       videoRef.current.pause();
     }
   }, [isVideoInView, isAuthorized]);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const scrollToOffer = () => {
-    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const salesLink = "https://hotmart.com/pt-br/marketplace/produtos/correlacao-o-guia-definitivo/S104098964K";
-  const whatsappLink = "http://wa.me/5511966510350";
-
-  return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
-      <AnimatePresence>
-        {!isAuthorized && (
-          <LeadForm onComplete={() => {
-            setIsAuthorized(true);
-            setTimerActive(true);
-            localStorage.setItem('timer_expiry', (Date.now() + 300000).toString());
-          }} />
-        )}
-      </AnimatePresence>
-
-      {isAuthorized && (
-        <>
-          {/* Header */}
-      <header className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between",
-        scrolled ? "bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800" : "bg-transparent"
-      )}>
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
-            <img 
-              src={logoImg} 
-              alt="Logo" 
-              className="w-full h-full object-contain"
-              referrerPolicy="no-referrer"
-            />
+  
+    useEffect(() => {
+      const handleScroll = () => setScrolled(window.scrollY > 50);
+      window.addEventListener('scroll', handleScroll);
+      return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+  
+    const scrollToOffer = () => {
+      document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+    };
+  
+    const salesLink = "https://hotmart.com/pt-br/marketplace/produtos/correlacao-o-guia-definitivo/S104098964K";
+    const whatsappLink = "http://wa.me/5511966510350";
+  
+    return (
+      <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
+        {isAuthorized && <TopBannerTimer />}
+        <AnimatePresence>
+          {!isAuthorized && (
+            <LeadForm onComplete={() => {
+              setIsAuthorized(true);
+              setTimerActive(true);
+              localStorage.setItem('timer_expiry', (Date.now() + 600000).toString());
+            }} />
+          )}
+        </AnimatePresence>
+  
+        {isAuthorized && (
+          <>
+            {/* Header */}
+        <header className={cn(
+          "fixed left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between",
+          isAuthorized ? "top-10" : "top-0",
+          scrolled ? "bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800" : "bg-transparent"
+        )}>
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
+              <img 
+                src={logoImg} 
+                alt="Logo" 
+                className="w-full h-full object-contain"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <span className="text-xl font-black tracking-tighter uppercase italic">
+              Você<span className="text-emerald-500">Consistente</span>
+            </span>
           </div>
-          <span className="text-xl font-black tracking-tighter uppercase italic">
-            Você<span className="text-emerald-500">Consistente</span>
-          </span>
-        </div>
-        <a href={salesLink} target="_blank" rel="noopener noreferrer" className="hidden md:flex">
-          <Button variant="primary" size="sm">
-            Quero ser Consistente
-          </Button>
-        </a>
-      </header>
-
-      {/* Hero Section */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
-        {/* Background Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full pointer-events-none opacity-20">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-500 rounded-full blur-[120px]" />
-        </div>
-
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-bold uppercase tracking-widest mb-8"
-            >
-              <Zap className="w-4 h-4" />
-              Mentoria Exclusiva 2026
-            </motion.div>
-            
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-black mb-8 tracking-tighter leading-[0.9]"
-            >
-              PARE DE PERDER <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">DINHEIRO NO DAY TRADE</span>
-            </motion.h1>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-xl md:text-2xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed"
-            >
-              Domine a técnica exata que gera consistência real no mercado financeiro, sem precisar de setups mágicos ou indicadores milagrosos.
-            </motion.p>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-col items-center justify-center"
-            >
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
-                <a href={salesLink} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                  <Button size="xl" className="w-full group">
-                    Quero Garantir Minha Vaga
-                    <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </a>
-              </div>
-            </motion.div>
-
-            {/* Video Section */}
-            <motion.div 
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mt-20 relative group"
-            >
-              <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-amber-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000" />
-              <div className="relative bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
-                <video 
-                  ref={videoRef}
-                  className="w-full aspect-video object-cover"
-                  controls
-                  muted
-                  playsInline
-                  poster={media3}
-                >
-                  <source src={videoSrc} type="video/mp4" />
-                  Seu navegador não suporta o elemento de vídeo.
-                </video>
-                <div className="absolute bottom-4 right-4 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">
-                  Aula Exclusiva
-                </div>
-              </div>
-              <p className="mt-4 text-zinc-500 text-sm italic">
-                Assista ao vídeo acima para entender a estratégia de correlação na prática.
-              </p>
-            </motion.div>
+          <a href={salesLink} target="_blank" rel="noopener noreferrer" className="hidden md:flex">
+            <Button variant="primary" size="sm">
+              Quero ser Consistente
+            </Button>
+          </a>
+        </header>
+  
+        {/* Hero Section */}
+        <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+          {/* Background Glows */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full pointer-events-none opacity-20">
+            <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-500 rounded-full blur-[120px]" />
           </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="py-24 bg-zinc-950 relative">
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="text-center mb-16">
-            <span className="text-emerald-500 font-bold uppercase tracking-widest text-sm">PARA TER ACESSO AO MÉTODO COMPLETO</span>
-            <h2 className="text-4xl md:text-6xl font-black mt-2">VOCÊ PAGARIA:</h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
-            {[
-              { title: "TREINAMENTO", price: "R$ 600,00", period: "VITALÍCIO", icon: <BookOpen className="w-10 h-10" /> },
-              { title: "PLANILHA", price: "R$ 2.400,00", period: "ANUAL", icon: <TrendingUp className="w-10 h-10" /> },
-              { title: "INDICADORES", price: "R$ 1.200,00", period: "ANUAL", icon: <ShieldCheck className="w-10 h-10" /> }
-            ].map((item, i) => (
-              <div key={i} className="text-center p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800">
-                <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 mx-auto mb-6 border border-emerald-500/20">
-                  {item.icon}
-                </div>
-                <h3 className="text-xl font-black mb-2 tracking-tighter">{item.title}</h3>
-                <div className="h-px w-12 bg-emerald-500 mx-auto mb-4" />
-                <div className="text-2xl font-bold text-white">{item.price}</div>
-                <div className="text-xs text-zinc-500 font-bold tracking-widest mt-1">{item.period}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mb-16">
-            <p className="text-zinc-500 font-bold uppercase tracking-widest text-sm mb-2">TOTALIZANDO MAIS DE:</p>
-            <p className="text-4xl md:text-5xl font-black text-red-600 line-through tracking-tighter">R$ 4.000,00</p>
-          </div>
-          
-          <div className="max-w-3xl mx-auto p-1 rounded-[2.5rem] bg-gradient-to-b from-emerald-500 to-emerald-700 shadow-2xl shadow-emerald-500/20">
-            <div className="bg-zinc-950 rounded-[2.3rem] p-8 md:p-16 text-center border border-white/5">
-              <h2 className="text-5xl md:text-7xl font-black mb-8 text-emerald-500 tracking-tighter italic">INVESTIMENTO</h2>
+  
+          <div className="container mx-auto px-6 relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-bold uppercase tracking-widest mb-8"
+              >
+                <Zap className="w-4 h-4" />
+                Mentoria Exclusiva 2026
+              </motion.div>
               
-              <p className="text-xl md:text-2xl font-bold text-white mb-12 leading-tight max-w-md mx-auto">
-                Por menos da metade do valor total receba acesso a todo o conteúdo
-              </p>
-
-              <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12">
-                <div className="text-left">
-                  <span className="text-red-500 font-bold text-sm block mb-1">De</span>
-                  <span className="text-2xl font-bold text-zinc-500 line-through">R$ 4.200,00</span>
-                </div>
-                <div className="text-left">
-                  <span className="text-emerald-500 font-bold text-sm block mb-1">Por:</span>
-                  <span className="text-6xl md:text-8xl font-black text-emerald-500 tracking-tighter">R$1097,70</span>
-                </div>
-              </div>
-
-              <a href="https://hotmart.com/pt-br/marketplace/produtos/correlacao-o-guia-definitivo/S104098964K" target="_blank" rel="noopener noreferrer" className="block group">
-                <Button size="xl" className="w-full py-8 text-2xl md:text-3xl font-black tracking-tighter relative overflow-hidden">
-                  <span className="relative z-10">GARANTIR MINHA VAGA</span>
-                  <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12" />
-                </Button>
-              </a>
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-5xl md:text-7xl lg:text-8xl font-black mb-8 tracking-tighter leading-[0.9]"
+              >
+                PARE DE PERDER <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">DINHEIRO NO DAY TRADE</span>
+              </motion.h1>
               
-              <CountdownTimer />
-              
-              <p className="mt-8 text-zinc-500 text-sm font-medium">
-                Acesso imediato após a confirmação do pagamento.
-              </p>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-xl md:text-2xl text-zinc-400 mb-12 max-w-2xl mx-auto leading-relaxed"
+              >
+                Domine a técnica exata que gera consistência real no mercado financeiro, sem precisar de setups mágicos ou indicadores milagrosos.
+              </motion.p>
+  
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col items-center justify-center"
+              >
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full">
+                  <a href={salesLink} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
+                    <Button size="xl" className="w-full group">
+                      Quero Garantir Minha Vaga
+                      <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </a>
+                </div>
+              </motion.div>
+  
+              {/* Video Section */}
+              <motion.div 
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="mt-20 relative group"
+              >
+                <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-amber-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000" />
+                <div className="relative bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 shadow-2xl">
+                  <video 
+                    ref={videoRef}
+                    className="w-full aspect-video object-cover"
+                    controls
+                    muted
+                    playsInline
+                    poster={media3}
+                  >
+                    <source src={videoSrc} type="video/mp4" />
+                    Seu navegador não suporta o elemento de vídeo.
+                  </video>
+                  <div className="absolute bottom-4 right-4 bg-emerald-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-tighter">
+                    Aula Exclusiva
+                  </div>
+                </div>
+                <p className="mt-4 text-zinc-500 text-sm italic">
+                  Assista ao vídeo acima para entender a estratégia de correlação na prática.
+                </p>
+              </motion.div>
             </div>
           </div>
-        </div>
-      </section>
-
+        </section>
+  
+        {/* What You Get Section (Moved Up) */}
+        <section className="py-24 bg-zinc-900/50 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="container mx-auto px-6 relative z-10">
+            <SectionTitle light subtitle="Treinamento completo com métodos validados.">
+              O QUE VOCÊ TERÁ <span className="text-emerald-500">ACESSO</span>
+            </SectionTitle>
+  
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {[
+                { title: "Cálculo Exclusivo", icon: <Target className="w-6 h-6" /> },
+                { title: "Indicadores Exclusivos", icon: <Zap className="w-6 h-6" /> },
+                { title: "Correlação", icon: <Clock className="w-6 h-6" /> },
+                { title: "Planilha em Tempo Real", icon: <TrendingUp className="w-6 h-6" /> },
+                { title: "Cálculo de Spread e Correlação", icon: <ShieldCheck className="w-6 h-6" /> },
+                { title: "Suporte Vitalício", icon: <Users className="w-6 h-6" /> }
+              ].map((item, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.05 }}
+                  className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 hover:border-emerald-500/50 transition-all group flex items-center gap-6"
+                >
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform shrink-0">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-xl font-bold tracking-tight">{item.title}</h3>
+                </motion.div>
+              ))}
+            </div>
+            <div className="flex justify-center">
+              <a href={salesLink} target="_blank" rel="noopener noreferrer">
+                <Button size="lg" variant="primary">Garantir Meu Acesso Completo</Button>
+              </a>
+            </div>
+          </div>
+        </section>
 
       {/* Why Section */}
       <section className="py-24 bg-white text-zinc-950">
@@ -607,7 +624,7 @@ export default function App() {
             Por que 95% dos Traders <span className="text-red-600">Fracassam?</span>
           </SectionTitle>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
             {[
               {
                 icon: <Zap className="w-8 h-8 text-amber-500" />,
@@ -639,6 +656,11 @@ export default function App() {
               </motion.div>
             ))}
           </div>
+          <div className="flex justify-center">
+            <a href={salesLink} target="_blank" rel="noopener noreferrer">
+              <Button size="lg" variant="primary">Quero Mudar Minha Realidade</Button>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -656,23 +678,23 @@ export default function App() {
                   O MÉTODO QUE <span className="text-emerald-500">GERA CONSISTÊNCIA</span>
                 </h2>
                 <p className="text-xl text-zinc-400 mb-8 leading-relaxed">
-                  Não é sobre prever o futuro, é sobre ler o presente. Nossa técnica foca na leitura de fluxo e comportamento institucional, permitindo que você entre nas operações com os grandes players.
+                  Indicador exclusivo plotado diretamente no gráfico para acompanhamento spread entre IBOV e WIN.
                 </p>
                 <ul className="space-y-4 mb-10">
                   {[
-                    "Leitura de Fluxo Simplificada",
-                    "Gerenciamento de Risco Matemático",
-                    "Psicologia Aplicada ao Trade",
-                    "Acompanhamento em Tempo Real"
+                    "O mercado não se move sozinho — ele é impulsionado pelos setores e pela relação entre eles",
+                    "Identifique quando o mercado está alinhado e quando está divergente, evitando entradas precipitadas",
+                    "Correlação em tempo real entre o índice e os principais setores",
+                    "Confirmações claras de compra e venda"
                   ].map((item, i) => (
-                    <li key={i} className="flex items-center gap-3 text-lg font-medium">
-                      <CheckCircle2 className="text-emerald-500 w-6 h-6 flex-shrink-0" />
-                      {item}
+                    <li key={i} className="flex items-start gap-3 text-lg font-medium">
+                      <CheckCircle2 className="text-emerald-500 w-6 h-6 flex-shrink-0 mt-1" />
+                      <span className="leading-tight">{item}</span>
                     </li>
                   ))}
                 </ul>
                 <a href={salesLink} target="_blank" rel="noopener noreferrer">
-                  <Button size="lg">Conhecer o Método</Button>
+                  <Button size="lg">Quero o Indicador Exclusivo</Button>
                 </a>
               </motion.div>
             </div>
@@ -753,80 +775,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* What You Get Section */}
-      <section className="py-24 bg-zinc-900/50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
-        <div className="container mx-auto px-6 relative z-10">
-          <SectionTitle light subtitle="Tudo o que você precisa para dominar o Mini Índice com profissionalismo.">
-            O QUE VOCÊ TERÁ <span className="text-emerald-500">ACESSO</span>
-          </SectionTitle>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Visão Institucional",
-                desc: "O mercado não se move sozinho — ele é impulsionado pelos setores e pela relação entre eles. Aprenda a ler essa dinâmica.",
-                icon: <Users className="w-6 h-6" />
-              },
-              {
-                title: "Alinhamento de Mercado",
-                desc: "Identifique quando o mercado está alinhado e quando está divergente, evitando entradas precipitadas e falsos rompimentos.",
-                icon: <Target className="w-6 h-6" />
-              },
-              {
-                title: "Correlação em Tempo Real",
-                desc: "Acompanhe a correlação exata entre o índice e os principais setores da economia enquanto opera.",
-                icon: <Clock className="w-6 h-6" />
-              },
-              {
-                title: "Planilha Profissional",
-                desc: "Confirmações claras de compra e venda através de uma planilha profissional, transmitida ao vivo para os alunos.",
-                icon: <BookOpen className="w-6 h-6" />
-              },
-              {
-                title: "Antecipação de Movimento",
-                desc: "Aprenda a enxergar o movimento antes dele acontecer, posicionando-se à frente da maioria dos traders de varejo.",
-                icon: <TrendingUp className="w-6 h-6" />
-              },
-              {
-                title: "Centro de Comando",
-                desc: "Tenha acesso ao verdadeiro centro de comando do mercado, com acompanhamento do spread entre IBOV e WIN.",
-                icon: <ShieldCheck className="w-6 h-6" />
-              },
-              {
-                title: "Especialização WINFUT",
-                desc: "Foco total em Mini Índice (WINFUT), a ferramenta mais volátil e lucrativa para o day trade profissional.",
-                icon: <Award className="w-6 h-6" />
-              },
-              {
-                title: "Metodologia Objective-Driven",
-                desc: "Direto ao ponto. Sem enrolação. Foco total em objetivos claros e execução precisa.",
-                icon: <Zap className="w-6 h-6" />
-              },
-              {
-                title: "Suporte Vitalício",
-                desc: "Imersão teórica e prática com track record em conta real e mentoria com suporte vitalício.",
-                icon: <Star className="w-6 h-6" />
-              }
-            ].map((item, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="p-8 rounded-3xl bg-zinc-950 border border-zinc-800 hover:border-emerald-500/50 transition-all group"
-              >
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-6 group-hover:scale-110 transition-transform">
-                  {item.icon}
-                </div>
-                <h3 className="text-xl font-bold mb-4">{item.title}</h3>
-                <p className="text-zinc-400 leading-relaxed text-sm">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* What You Get Section (Original Location - Removed) */}
 
       {/* Spreadsheet Showcase Section */}
       <section className="py-24 bg-zinc-950 relative overflow-hidden">
@@ -835,7 +784,7 @@ export default function App() {
             Nossa Ferramenta de <span className="text-emerald-500">Elite</span>
           </SectionTitle>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -860,6 +809,78 @@ export default function App() {
               <p className="text-zinc-500 text-sm text-center italic">Confirmações visuais de força e exaustão do preço.</p>
             </motion.div>
           </div>
+          <div className="flex justify-center">
+            <a href={salesLink} target="_blank" rel="noopener noreferrer">
+              <Button size="lg" variant="primary">Quero Acesso à Ferramenta</Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 bg-zinc-950 relative">
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <span className="text-emerald-500 font-bold uppercase tracking-widest text-sm">PARA TER ACESSO AO MÉTODO COMPLETO</span>
+            <h2 className="text-4xl md:text-6xl font-black mt-2">VOCÊ PAGARIA:</h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto mb-16">
+            {[
+              { title: "TREINAMENTO", price: "R$ 600,00", period: "VITALÍCIO", icon: <BookOpen className="w-10 h-10" /> },
+              { title: "PLANILHA", price: "R$ 2.400,00", period: "ANUAL", icon: <TrendingUp className="w-10 h-10" /> },
+              { title: "INDICADORES", price: "R$ 1.200,00", period: "ANUAL", icon: <ShieldCheck className="w-10 h-10" /> }
+            ].map((item, i) => (
+              <div key={i} className="text-center p-8 rounded-3xl bg-zinc-900/50 border border-zinc-800">
+                <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 mx-auto mb-6 border border-emerald-500/20">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-black mb-2 tracking-tighter">{item.title}</h3>
+                <div className="h-px w-12 bg-emerald-500 mx-auto mb-4" />
+                <div className="text-2xl font-bold text-white">{item.price}</div>
+                <div className="text-xs text-zinc-500 font-bold tracking-widest mt-1">{item.period}</div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mb-16">
+            <p className="text-zinc-500 font-bold uppercase tracking-widest text-sm mb-2">TOTALIZANDO MAIS DE:</p>
+            <p className="text-4xl md:text-5xl font-black text-red-600 line-through tracking-tighter">R$ 4.000,00</p>
+          </div>
+          
+          <div className="max-w-3xl mx-auto p-1 rounded-[2.5rem] bg-gradient-to-b from-emerald-500 to-emerald-700 shadow-2xl shadow-emerald-500/20">
+            <div className="bg-zinc-950 rounded-[2.3rem] p-8 md:p-16 text-center border border-white/5">
+              <h2 className="text-2xl sm:text-5xl md:text-7xl font-black mb-8 text-emerald-500 tracking-tighter italic whitespace-nowrap">INVESTIMENTO</h2>
+              
+              <p className="text-xl md:text-2xl font-bold text-white mb-12 leading-tight max-w-md mx-auto">
+                Por menos da metade do valor total receba acesso a todo o conteúdo
+              </p>
+
+              <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12">
+                <div className="text-left">
+                  <span className="text-red-500 font-bold text-sm block mb-1">De</span>
+                  <span className="text-2xl font-bold text-zinc-500 line-through">R$ 4.200,00</span>
+                </div>
+                <div className="text-left">
+                  <span className="text-emerald-500 font-bold text-sm block mb-1">Por:</span>
+                  <span className="text-6xl md:text-8xl font-black text-emerald-500 tracking-tighter">R$1097,70</span>
+                </div>
+              </div>
+
+              <a href={salesLink} target="_blank" rel="noopener noreferrer" className="block group">
+                <Button size="xl" className="w-full py-8 text-2xl md:text-3xl font-black tracking-tighter relative overflow-hidden">
+                  <span className="relative z-10">GARANTIR MINHA VAGA</span>
+                  <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12" />
+                </Button>
+              </a>
+              
+              <CountdownTimer />
+              
+              <p className="mt-8 text-zinc-500 text-sm font-medium">
+                Acesso imediato após a confirmação do pagamento.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -870,7 +891,7 @@ export default function App() {
             Depoimentos de <span className="text-emerald-500">Alunos</span>
           </SectionTitle>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {[
               { name: "GUSTAVO RIBEIRO", comment: "Bem objetivo. Peguei algumas ideias e já apliquei no meu operacional." },
               { name: "CAMILA TEIXEIRA", comment: "Conteúdo direto e prático. Já senti diferença na forma de operar." },
