@@ -104,28 +104,28 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-8 rounded-3xl shadow-2xl relative z-10"
+        className="w-full max-w-md bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-5 md:p-8 rounded-3xl shadow-2xl relative z-10 mx-4"
       >
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
-            <img src={logoImg} alt="Logo" className="w-10 h-10 object-contain" />
+        <div className="text-center mb-6 md:mb-8">
+          <div className="w-14 h-14 md:w-16 md:h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+            <img src={logoImg} alt="Logo" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
           </div>
-          <h2 className="text-2xl font-black text-white mb-4 leading-tight">Você está a um passo de garantir sua condição especial</h2>
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 mb-2">
-            <p className="text-zinc-300 text-base font-medium mb-1">
+          <h2 className="text-xl md:text-2xl font-black text-white mb-4 leading-tight">Você está a um passo de garantir sua condição especial</h2>
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-3 md:p-4 mb-2">
+            <p className="text-zinc-300 text-sm md:text-base font-medium mb-1">
               Preencha seus dados e libere:
             </p>
             <motion.div 
               animate={{ 
-                scale: [1, 1.05, 1],
+                scale: [1, 1.02, 1],
                 textShadow: [
                   "0 0 0px rgba(239, 68, 68, 0)",
-                  "0 0 20px rgba(239, 68, 68, 0.5)",
+                  "0 0 15px rgba(239, 68, 68, 0.4)",
                   "0 0 0px rgba(239, 68, 68, 0)"
                 ]
               }} 
               transition={{ repeat: Infinity, duration: 1.5 }} 
-              className="text-4xl md:text-5xl font-black text-red-500 tracking-tighter"
+              className="text-2xl sm:text-4xl md:text-5xl font-black text-red-500 tracking-tighter leading-none"
             >
               75% DE DESCONTO
             </motion.div>
@@ -530,7 +530,7 @@ export default function App() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-5xl md:text-7xl lg:text-8xl font-black mb-8 tracking-tighter leading-[0.9]"
+                className="text-4xl md:text-7xl lg:text-8xl font-black mb-8 tracking-tighter leading-[0.9]"
               >
                 PARE DE PERDER <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">DINHEIRO NO DAY TRADE</span>
@@ -593,147 +593,110 @@ export default function App() {
           </div>
         </section>
   
-        {/* What You Get Section (Moved Up) */}
-        <section className="py-24 bg-zinc-900/50 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
-          <div className="container mx-auto px-6 relative z-10">
-            <SectionTitle light subtitle="Treinamento completo com métodos validados.">
-              O QUE VOCÊ TERÁ <span className="text-emerald-500">ACESSO</span>
-            </SectionTitle>
-  
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {/* The Method Section */}
+        <section className="py-24 bg-zinc-950">
+          <div className="container mx-auto px-6">
+            <div className="flex flex-col lg:flex-row items-center gap-16">
+              <div className="lg:w-1/2">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                >
+                  <h2 className="text-3xl md:text-6xl font-black mb-8 leading-tight">
+                    TRANSMISSÃO <span className="text-emerald-500">AO VIVO</span>
+                  </h2>
+                  <p className="text-xl text-zinc-400 mb-8 leading-relaxed">
+                    Acompanhe a leitura profissional do mercado em tempo real com nossas ferramentas exclusivas.
+                  </p>
+                  <ul className="space-y-4 mb-10">
+                    {[
+                      "Planilha profissional, transmitida ao vivo",
+                      "Enxergar o movimento antes dele acontecer",
+                      "Centro de comando do mercado",
+                      "Acompanhamento do spread entre IBOV e WIN"
+                    ].map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-lg font-medium">
+                        <CheckCircle2 className="text-emerald-500 w-6 h-6 flex-shrink-0 mt-1" />
+                        <span className="leading-tight">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a href={salesLink} target="_blank" rel="noopener noreferrer">
+                    <Button size="lg">Quero Acesso à Transmissão</Button>
+                  </a>
+                </motion.div>
+              </div>
+              <div className="lg:w-1/2 relative">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="relative z-10 rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl"
+                >
+                  <img 
+                    src={media3} 
+                    alt="Operação Real" 
+                    className="w-full h-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                </motion.div>
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl" />
+                <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Why Section */}
+        <section className="h-[230px] bg-white text-zinc-950 overflow-hidden relative">
+          <div className="container mx-auto px-6 h-full flex flex-col justify-center py-4">
+            <div className="text-center mb-4">
+              <motion.h2 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900"
+              >
+                Por que 95% dos Traders <span className="text-red-600">Fracassam?</span>
+              </motion.h2>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4 mb-4">
               {[
-                { title: "Cálculo Exclusivo", icon: <Target className="w-6 h-6" /> },
-                { title: "Indicadores Exclusivos", icon: <Zap className="w-6 h-6" /> },
-                { title: "Correlação", icon: <Clock className="w-6 h-6" /> },
-                { title: "Planilha em Tempo Real", icon: <TrendingUp className="w-6 h-6" /> },
-                { title: "Cálculo de Spread e Correlação", icon: <ShieldCheck className="w-6 h-6" /> },
-                { title: "Suporte Vitalício", icon: <Users className="w-6 h-6" /> }
+                {
+                  icon: <Zap className="w-5 h-5 text-amber-500" />,
+                  title: "Excesso de Informação",
+                },
+                {
+                  icon: <Target className="w-5 h-5 text-emerald-500" />,
+                  title: "Falta de Método",
+                },
+                {
+                  icon: <ShieldCheck className="w-5 h-5 text-blue-500" />,
+                  title: "Psicológico Frágil",
+                }
               ].map((item, i) => (
                 <motion.div 
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
-                  className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 hover:border-emerald-500/50 transition-all group flex items-center gap-6"
+                  transition={{ delay: i * 0.1 }}
+                  className="p-3 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-center gap-3"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform shrink-0">
-                    {item.icon}
-                  </div>
-                  <h3 className="text-xl font-bold tracking-tight">{item.title}</h3>
+                  <div className="shrink-0">{item.icon}</div>
+                  <h3 className="text-sm font-bold">{item.title}</h3>
                 </motion.div>
               ))}
             </div>
             <div className="flex justify-center">
               <a href={salesLink} target="_blank" rel="noopener noreferrer">
-                <Button size="lg" variant="primary">Garantir Meu Acesso Completo</Button>
+                <Button size="sm" variant="primary">Quero Mudar Minha Realidade</Button>
               </a>
             </div>
           </div>
         </section>
-
-      {/* Why Section */}
-      <section className="py-24 bg-white text-zinc-950">
-        <div className="container mx-auto px-6">
-          <SectionTitle subtitle="A dura realidade que ninguém te conta sobre o mercado financeiro.">
-            Por que 95% dos Traders <span className="text-red-600">Fracassam?</span>
-          </SectionTitle>
-
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {[
-              {
-                icon: <Zap className="w-8 h-8 text-amber-500" />,
-                title: "Excesso de Informação",
-                desc: "Você tenta usar 10 indicadores ao mesmo tempo e acaba travado na hora de tomar uma decisão."
-              },
-              {
-                icon: <Target className="w-8 h-8 text-emerald-500" />,
-                title: "Falta de Método",
-                desc: "Você opera por intuição ou segue 'dicas' de grupos de WhatsApp, sem um plano claro e testado."
-              },
-              {
-                icon: <ShieldCheck className="w-8 h-8 text-blue-500" />,
-                title: "Psicológico Frágil",
-                desc: "O medo de perder ou a ganância excessiva fazem você abandonar a estratégia no meio do caminho."
-              }
-            ].map((item, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-8 rounded-3xl bg-zinc-50 border border-zinc-200 hover:shadow-xl transition-shadow"
-              >
-                <div className="mb-6">{item.icon}</div>
-                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
-                <p className="text-zinc-600 leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-          <div className="flex justify-center">
-            <a href={salesLink} target="_blank" rel="noopener noreferrer">
-              <Button size="lg" variant="primary">Quero Mudar Minha Realidade</Button>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* The Method Section */}
-      <section className="py-24 bg-zinc-950">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            <div className="lg:w-1/2">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-              >
-                <h2 className="text-4xl md:text-6xl font-black mb-8 leading-tight">
-                  O MÉTODO QUE <span className="text-emerald-500">GERA CONSISTÊNCIA</span>
-                </h2>
-                <p className="text-xl text-zinc-400 mb-8 leading-relaxed">
-                  Indicador exclusivo plotado diretamente no gráfico para acompanhamento spread entre IBOV e WIN.
-                </p>
-                <ul className="space-y-4 mb-10">
-                  {[
-                    "O mercado não se move sozinho — ele é impulsionado pelos setores e pela relação entre eles",
-                    "Identifique quando o mercado está alinhado e quando está divergente, evitando entradas precipitadas",
-                    "Correlação em tempo real entre o índice e os principais setores",
-                    "Confirmações claras de compra e venda"
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-lg font-medium">
-                      <CheckCircle2 className="text-emerald-500 w-6 h-6 flex-shrink-0 mt-1" />
-                      <span className="leading-tight">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <a href={salesLink} target="_blank" rel="noopener noreferrer">
-                  <Button size="lg">Quero o Indicador Exclusivo</Button>
-                </a>
-              </motion.div>
-            </div>
-            <div className="lg:w-1/2 relative">
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                className="relative z-10 rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl"
-              >
-                <img 
-                  src={media3} 
-                  alt="Operação Real" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
-                />
-              </motion.div>
-              <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl" />
-              <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-amber-500/20 rounded-full blur-3xl" />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Modules Section */}
       <section className="py-24 bg-zinc-900/30">
@@ -741,13 +704,18 @@ export default function App() {
           <SectionTitle light subtitle="Um passo a passo completo, do zero ao avançado.">
             O Que Você Vai <span className="text-emerald-500">Aprender</span>
           </SectionTitle>
+          <div className="flex justify-center -mt-8 mb-12">
+            <a href={salesLink} target="_blank" rel="noopener noreferrer">
+              <Button size="lg" variant="primary">Quero Começar Agora</Button>
+            </a>
+          </div>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="grid sm:grid-cols-2 gap-6">
               {[
                 { icon: <BookOpen />, title: "Fundamentos", desc: "A base sólida que todo trader consistente precisa ter." },
                 { icon: <TrendingUp />, title: "A Técnica", desc: "O passo a passo da nossa estratégia vencedora." },
-                { icon: <ShieldCheck />, title: "Risco", desc: "Como proteger seu capital e nunca quebrar a banca." },
+                { icon: <ShieldCheck />, title: "Risco", desc: "Como manter seu capital e nunca quebrar a banca." },
                 { icon: <Users />, title: "Comunidade", desc: "Acesso ao grupo exclusivo de alunos para troca de experiências." }
               ].map((item, i) => (
                 <div key={i} className="p-8 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 transition-all group">
@@ -797,37 +765,12 @@ export default function App() {
       <section className="py-24 bg-zinc-950 relative overflow-hidden">
         <div className="container mx-auto px-6 relative z-10">
           <SectionTitle light subtitle="Visualize o mercado como os profissionais. Nossa planilha exclusiva entrega os pontos exatos de entrada.">
-            Nossa Ferramenta de <span className="text-emerald-500">Elite</span>
+            Indicadores <span className="text-emerald-500">Exclusivos</span>
           </SectionTitle>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12">
-            <motion.div 
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <div className="rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
-                <img src={media1} alt="Planilha de Correlação 1" className="w-full h-auto" referrerPolicy="no-referrer" />
-              </div>
-              <p className="text-zinc-500 text-sm text-center italic">Monitoramento em tempo real dos setores e correlações.</p>
-            </motion.div>
-
-            <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="space-y-6"
-            >
-              <div className="rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl">
-                <img src={media2} alt="Planilha de Correlação 2" className="w-full h-auto" referrerPolicy="no-referrer" />
-              </div>
-              <p className="text-zinc-500 text-sm text-center italic">Confirmações visuais de força e exaustão do preço.</p>
-            </motion.div>
-          </div>
           <div className="flex justify-center">
             <a href={salesLink} target="_blank" rel="noopener noreferrer">
-              <Button size="lg" variant="primary">Quero Acesso à Ferramenta</Button>
+              <Button size="lg" variant="primary">Quero Acesso aos Indicadores</Button>
             </a>
           </div>
         </div>
@@ -896,6 +839,46 @@ export default function App() {
                 Acesso imediato após a confirmação do pagamento.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What You Get Section */}
+      <section className="py-24 bg-zinc-900/50 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="container mx-auto px-6 relative z-10">
+          <SectionTitle light subtitle="Treinamento completo com métodos validados.">
+            O QUE VOCÊ TERÁ <span className="text-emerald-500">ACESSO</span>
+          </SectionTitle>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {[
+              { title: "Cálculo Exclusivo", icon: <Target className="w-6 h-6" /> },
+              { title: "Indicadores Exclusivos", icon: <Zap className="w-6 h-6" /> },
+              { title: "Correlação", icon: <Clock className="w-6 h-6" /> },
+              { title: "Planilha em Tempo Real", icon: <TrendingUp className="w-6 h-6" /> },
+              { title: "Cálculo de Spread e Correlação", icon: <ShieldCheck className="w-6 h-6" /> },
+              { title: "Suporte Vitalício", icon: <Users className="w-6 h-6" /> }
+            ].map((item, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 hover:border-emerald-500/50 transition-all group flex items-center gap-6"
+              >
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform shrink-0">
+                  {item.icon}
+                </div>
+                <h3 className="text-xl font-bold tracking-tight">{item.title}</h3>
+              </motion.div>
+            ))}
+          </div>
+          <div className="flex justify-center">
+            <a href={salesLink} target="_blank" rel="noopener noreferrer">
+              <Button size="lg" variant="primary">Garantir Meu Acesso Completo</Button>
+            </a>
           </div>
         </div>
       </section>
