@@ -95,8 +95,8 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950 px-6">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center bg-zinc-950 px-6 py-10 overflow-y-auto">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none fixed">
         <div className="absolute top-1/4 -left-1/4 w-1/2 h-1/2 bg-emerald-500/10 blur-[120px] rounded-full" />
         <div className="absolute bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-emerald-500/10 blur-[120px] rounded-full" />
       </div>
@@ -104,15 +104,15 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-5 md:p-8 rounded-3xl shadow-2xl relative z-10 mx-4"
+        className="w-full max-w-md bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-6 md:p-8 rounded-3xl shadow-2xl relative z-10 mx-auto my-auto"
       >
         <div className="text-center mb-6 md:mb-8">
-          <div className="w-14 h-14 md:w-16 md:h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
-            <img src={logoImg} alt="Logo" className="w-8 h-8 md:w-10 md:h-10 object-contain" />
+          <div className="w-12 h-12 md:w-16 md:h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+            <img src={logoImg} alt="Logo" className="w-7 h-7 md:w-10 md:h-10 object-contain" />
           </div>
-          <h2 className="text-xl md:text-2xl font-black text-white mb-4 leading-tight">Você está a um passo de garantir sua condição especial</h2>
+          <h2 className="text-lg md:text-2xl font-black text-white mb-4 leading-tight">Você está a um passo de garantir sua condição especial</h2>
           <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-3 md:p-4 mb-2">
-            <p className="text-zinc-300 text-sm md:text-base font-medium mb-1">
+            <p className="text-zinc-300 text-xs md:text-base font-medium mb-1">
               Preencha seus dados e libere:
             </p>
             <motion.div 
@@ -125,39 +125,39 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
                 ]
               }} 
               transition={{ repeat: Infinity, duration: 1.5 }} 
-              className="text-2xl sm:text-4xl md:text-5xl font-black text-red-500 tracking-tighter leading-none"
+              className="text-xl sm:text-4xl md:text-5xl font-black text-red-500 tracking-tighter leading-none"
             >
               75% DE DESCONTO
             </motion.div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
           <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1.5 ml-1">Nome Completo</label>
+            <label className="block text-[11px] md:text-sm font-medium text-zinc-400 mb-1 ml-1">Nome Completo</label>
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-zinc-500" />
               <input 
                 required
                 type="text"
                 placeholder="Seu nome aqui"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-zinc-800/50 border border-zinc-700 rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
+                className="w-full bg-zinc-800/50 border border-zinc-700 rounded-2xl py-3 md:py-3.5 pl-10 md:pl-12 pr-4 text-sm md:text-base text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1.5 ml-1">Você já opera?</label>
+            <label className="block text-[11px] md:text-sm font-medium text-zinc-400 mb-1 ml-1">Você já opera?</label>
             <div className="relative">
-              <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+              <TrendingUp className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-zinc-500" />
               <select 
                 required
                 value={formData.alreadyOperates}
                 onChange={(e) => setFormData({ ...formData, alreadyOperates: e.target.value })}
                 className={cn(
-                  "w-full bg-zinc-800/50 border rounded-2xl py-3.5 pl-12 pr-4 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all",
+                  "w-full bg-zinc-800/50 border rounded-2xl py-3 md:py-3.5 pl-10 md:pl-12 pr-4 text-sm md:text-base text-white appearance-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all",
                   errors.alreadyOperates ? "border-red-500/50 ring-1 ring-red-500/20" : "border-zinc-700"
                 )}
               >
@@ -165,15 +165,15 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
                 <option value="sim" className="bg-zinc-900">Sim</option>
                 <option value="nao" className="bg-zinc-900">Não</option>
               </select>
-              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 pointer-events-none" />
+              <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-zinc-500 pointer-events-none" />
             </div>
-            {errors.alreadyOperates && <p className="text-red-400 text-xs mt-1.5 ml-1">{errors.alreadyOperates}</p>}
+            {errors.alreadyOperates && <p className="text-red-400 text-[10px] mt-1 ml-1">{errors.alreadyOperates}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-zinc-400 mb-1.5 ml-1">WhatsApp</label>
+            <label className="block text-[11px] md:text-sm font-medium text-zinc-400 mb-1 ml-1">WhatsApp</label>
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-zinc-500" />
               <input 
                 required
                 type="tel"
@@ -181,25 +181,25 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
                 className={cn(
-                  "w-full bg-zinc-800/50 border rounded-2xl py-3.5 pl-12 pr-4 text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all",
+                  "w-full bg-zinc-800/50 border rounded-2xl py-3 md:py-3.5 pl-10 md:pl-12 pr-4 text-sm md:text-base text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all",
                   errors.phone ? "border-red-500/50 ring-1 ring-red-500/20" : "border-zinc-700"
                 )}
               />
             </div>
-            {errors.phone && <p className="text-red-400 text-xs mt-1.5 ml-1">{errors.phone}</p>}
+            {errors.phone && <p className="text-red-400 text-[10px] mt-1 ml-1">{errors.phone}</p>}
           </div>
 
           <button 
             disabled={isSubmitting}
             type="submit"
-            className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 mt-4"
+            className="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-3.5 md:py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 mt-2 md:mt-4"
           >
             {isSubmitting ? (
-              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="w-5 h-5 md:w-6 md:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <>
                 ACESSAR AGORA
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
               </>
             )}
           </button>
@@ -433,6 +433,12 @@ export default function App() {
   const isVideoInView = useInView(videoRef, { amount: 0.5 });
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('form') === 'true') {
+      setIsAuthorized(false);
+      return;
+    }
+
     const captured = localStorage.getItem('lead_captured');
     if (captured === 'true') {
       setIsAuthorized(true);
@@ -649,8 +655,8 @@ export default function App() {
         </section>
 
         {/* Why Section */}
-        <section className="h-[230px] bg-white text-zinc-950 overflow-hidden relative">
-          <div className="container mx-auto px-6 h-full flex flex-col justify-center py-4">
+        <section className="min-h-[300px] py-12 bg-white text-zinc-950 relative">
+          <div className="container mx-auto px-6 h-full flex flex-col justify-center">
             <div className="text-center mb-4">
               <motion.h2 
                 initial={{ opacity: 0, y: 10 }}
@@ -715,7 +721,7 @@ export default function App() {
               {[
                 { icon: <BookOpen />, title: "Fundamentos", desc: "A base sólida que todo trader consistente precisa ter." },
                 { icon: <TrendingUp />, title: "A Técnica", desc: "O passo a passo da nossa estratégia vencedora." },
-                { icon: <ShieldCheck />, title: "Risco", desc: "Como manter seu capital e nunca quebrar a banca." },
+                { icon: <ShieldCheck />, title: "Risco", desc: "Como proteger seu capital." },
                 { icon: <Users />, title: "Comunidade", desc: "Acesso ao grupo exclusivo de alunos para troca de experiências." }
               ].map((item, i) => (
                 <div key={i} className="p-8 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-emerald-500/50 transition-all group">
