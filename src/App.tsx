@@ -104,28 +104,23 @@ const LeadForm = ({ onComplete }: { onComplete: () => void }) => {
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-md bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-6 md:p-8 rounded-3xl shadow-2xl relative z-10 mx-auto my-auto"
+        className="w-full max-w-md bg-zinc-900/80 md:backdrop-blur-xl border border-zinc-800 p-6 md:p-8 rounded-3xl shadow-2xl relative z-10 mx-auto my-auto"
       >
-        <div className="text-center mb-6 md:mb-8">
+        <div className="text-center mb-6 md:mb-8" translate="no">
           <div className="w-12 h-12 md:w-16 md:h-16 bg-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
             <img src={logoImg} alt="Logo" className="w-7 h-7 md:w-10 md:h-10 object-contain" />
           </div>
           <h2 className="text-lg md:text-2xl font-black text-white mb-4 leading-tight">Você está a um passo de garantir sua condição especial</h2>
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-3 md:p-4 mb-2">
-            <p className="text-zinc-300 text-xs md:text-base font-medium mb-1">
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-4 md:p-6 mb-2">
+            <p className="text-zinc-300 text-sm md:text-base font-semibold mb-2 leading-relaxed">
               Preencha seus dados e libere:
             </p>
             <motion.div 
               animate={{ 
-                scale: [1, 1.02, 1],
-                textShadow: [
-                  "0 0 0px rgba(239, 68, 68, 0)",
-                  "0 0 15px rgba(239, 68, 68, 0.4)",
-                  "0 0 0px rgba(239, 68, 68, 0)"
-                ]
+                scale: [1, 1.03, 1],
               }} 
-              transition={{ repeat: Infinity, duration: 1.5 }} 
-              className="text-xl sm:text-4xl md:text-5xl font-black text-red-500 tracking-tighter leading-none"
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }} 
+              className="text-[1.75rem] xs:text-3xl sm:text-4xl md:text-5xl font-black text-red-500 tracking-tighter leading-none drop-shadow-[0_0_10px_rgba(239,68,68,0.3)]"
             >
               75% DE DESCONTO
             </motion.div>
@@ -217,87 +212,16 @@ const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
 
   useEffect(() => {
+    const expiry = localStorage.getItem('timer_expiry');
+    if (!expiry) return;
+
+    const expiryTime = parseInt(expiry, 10);
+    
     const updateTimer = () => {
-      const expiry = localStorage.getItem('timer_expiry');
-      if (!expiry) {
-        setTimeLeft(null);
-        return;
-      }
       const now = Date.now();
-      const diff = Math.max(0, parseInt(expiry, 10) - now);
+      const diff = Math.max(0, expiryTime - now);
       setTimeLeft(diff);
-    };
-
-    updateTimer();
-    const interval = setInterval(updateTimer, 10);
-    return () => clearInterval(interval);
-  }, []);
-
-  if (timeLeft === null) return null;
-
-  const minutes = Math.floor(timeLeft / 60000);
-  const seconds = Math.floor((timeLeft % 60000) / 1000);
-  const ms = Math.floor((timeLeft % 1000) / 10);
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ 
-        opacity: 1, 
-        y: 0,
-        scale: [1, 1.02, 1],
-      }}
-      transition={{
-        scale: {
-          duration: 2,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }
-      }}
-      className="flex flex-col items-center mt-6"
-    >
-      <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
-        Oferta expira em:
-      </span>
-      <div className="flex gap-2">
-        <div className="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl min-w-[50px] shadow-xl">
-          <span className="text-2xl font-black text-white tabular-nums">
-            {minutes.toString().padStart(2, '0')}
-          </span>
-          <span className="block text-[8px] text-zinc-500 uppercase font-bold text-center mt-0.5">Min</span>
-        </div>
-        <span className="text-2xl font-black text-emerald-500 self-center">:</span>
-        <div className="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl min-w-[50px] shadow-xl">
-          <span className="text-2xl font-black text-white tabular-nums">
-            {seconds.toString().padStart(2, '0')}
-          </span>
-          <span className="block text-[8px] text-zinc-500 uppercase font-bold text-center mt-0.5">Seg</span>
-        </div>
-        <span className="text-2xl font-black text-emerald-500 self-center">:</span>
-        <div className="bg-zinc-900 border border-zinc-800 px-3 py-2 rounded-xl min-w-[50px] shadow-xl">
-          <span className="text-2xl font-black text-emerald-400 tabular-nums">
-            {ms.toString().padStart(2, '0')}
-          </span>
-          <span className="block text-[8px] text-zinc-500 uppercase font-bold text-center mt-0.5">Ms</span>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-const TopBannerTimer = () => {
-  const [timeLeft, setTimeLeft] = useState<number | null>(null);
-
-  useEffect(() => {
-    const updateTimer = () => {
-      const expiry = localStorage.getItem('timer_expiry');
-      if (!expiry) {
-        setTimeLeft(null);
-        return;
-      }
-      const now = Date.now();
-      const diff = Math.max(0, parseInt(expiry, 10) - now);
-      setTimeLeft(diff);
+      if (diff <= 0) clearInterval(interval);
     };
 
     updateTimer();
@@ -312,16 +236,68 @@ const TopBannerTimer = () => {
 
   return (
     <motion.div 
-      animate={{ backgroundColor: ['#f59e0b', '#fbbf24', '#f59e0b'] }}
-      transition={{ duration: 2, repeat: Infinity }}
-      className="w-full py-2 px-4 flex items-center justify-center gap-2 text-zinc-900 font-bold text-sm md:text-base sticky top-0 z-[60]"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ 
+        opacity: 1, 
+        y: 0,
+      }}
+      className="flex flex-col items-center mt-6 will-change-transform"
     >
-      <Clock className="w-4 h-4 animate-pulse" />
+      <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-[0.2em] mb-3">
+        Oferta expira em:
+      </span>
+      <div className="flex gap-2">
+        <div className="bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-xl min-w-[60px] shadow-xl">
+          <span className="text-3xl font-black text-white tabular-nums">
+            {minutes.toString().padStart(2, '0')}
+          </span>
+          <span className="block text-[9px] text-zinc-500 uppercase font-bold text-center mt-1">Min</span>
+        </div>
+        <span className="text-3xl font-black text-emerald-500 self-center">:</span>
+        <div className="bg-zinc-900 border border-zinc-800 px-4 py-3 rounded-xl min-w-[60px] shadow-xl">
+          <span className="text-3xl font-black text-white tabular-nums">
+            {seconds.toString().padStart(2, '0')}
+          </span>
+          <span className="block text-[9px] text-zinc-500 uppercase font-bold text-center mt-1">Seg</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const TopBannerTimer = () => {
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    const expiry = localStorage.getItem('timer_expiry');
+    if (!expiry) return;
+
+    const expiryTime = parseInt(expiry, 10);
+
+    const updateTimer = () => {
+      const now = Date.now();
+      const diff = Math.max(0, expiryTime - now);
+      setTimeLeft(diff);
+    };
+
+    updateTimer();
+    const interval = setInterval(updateTimer, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (timeLeft === null) return null;
+
+  const minutes = Math.floor(timeLeft / 60000);
+  const seconds = Math.floor((timeLeft % 60000) / 1000);
+
+  return (
+    <div className="w-full py-2 px-4 flex items-center justify-center gap-2 text-zinc-900 font-bold text-sm md:text-base sticky top-0 z-[60] bg-amber-500 animate-pulse-slow">
+      <Clock className="w-4 h-4" />
       <span>DESCONTO VÁLIDO POR:</span>
       <span className="font-black tabular-nums">
         {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
       </span>
-    </motion.div>
+    </div>
   );
 };
 
@@ -367,9 +343,9 @@ const Button = ({
 const SectionTitle = ({ children, subtitle, light = false }: { children: React.ReactNode; subtitle?: string; light?: boolean }) => (
   <div className="text-center mb-12">
     <motion.h2 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+      viewport={{ once: true, margin: "-20px" }}
       className={cn(
         "text-3xl md:text-5xl font-black mb-4 tracking-tight",
         light ? "text-white" : "text-zinc-900"
@@ -379,9 +355,9 @@ const SectionTitle = ({ children, subtitle, light = false }: { children: React.R
     </motion.h2>
     {subtitle && (
       <motion.p 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
+        viewport={{ once: true, margin: "-20px" }}
         transition={{ delay: 0.1 }}
         className={cn(
           "text-lg md:text-xl max-w-2xl mx-auto",
@@ -582,6 +558,7 @@ export default function App() {
                     controls
                     muted
                     playsInline
+                    preload="metadata"
                     poster={media3}
                   >
                     <source src={videoSrc} type="video/mp4" />
@@ -774,10 +751,25 @@ export default function App() {
             Indicadores <span className="text-emerald-500">Exclusivos</span>
           </SectionTitle>
 
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-12">
             <a href={salesLink} target="_blank" rel="noopener noreferrer">
               <Button size="lg" variant="primary">Quero Acesso aos Indicadores</Button>
             </a>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative max-w-4xl w-full rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl"
+            >
+              <img 
+                src={media2} 
+                alt="Indicadores Exclusivos" 
+                className="w-full h-auto"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/20 to-transparent pointer-events-none" />
+            </motion.div>
           </div>
         </div>
       </section>
