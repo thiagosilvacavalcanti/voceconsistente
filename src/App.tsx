@@ -291,7 +291,7 @@ const TopBannerTimer = () => {
   const seconds = Math.floor((timeLeft % 60000) / 1000);
 
   return (
-    <div className="w-full py-2 px-4 flex items-center justify-center gap-2 text-zinc-900 font-bold text-sm md:text-base fixed top-0 left-0 right-0 z-[70] bg-amber-500 animate-pulse-slow">
+    <div className="w-full py-2 px-4 flex items-center justify-center gap-2 text-zinc-900 font-bold text-sm md:text-base bg-amber-500 animate-pulse-slow">
       <Clock className="w-4 h-4" />
       <span>DESCONTO VÁLIDO POR:</span>
       <span className="font-black tabular-nums">
@@ -450,7 +450,6 @@ export default function App() {
   
     return (
       <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
-        {isAuthorized && <TopBannerTimer />}
         <AnimatePresence>
           {!isAuthorized && (
             <LeadForm onComplete={() => {
@@ -463,34 +462,36 @@ export default function App() {
   
         {isAuthorized && (
           <>
-            {/* Header */}
-        <header className={cn(
-          "fixed left-0 right-0 z-50 transition-all duration-300 px-6 py-4 flex items-center justify-between",
-          isAuthorized ? "top-10" : "top-0",
-          scrolled ? "bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800" : "bg-transparent"
-        )}>
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
-              <img 
-                src={logoImg} 
-                alt="Logo" 
-                className="w-full h-full object-contain"
-                referrerPolicy="no-referrer"
-              />
+            {/* Fixed Top Navigation Bar */}
+            <div className="fixed top-0 left-0 right-0 z-[70] flex flex-col">
+              <TopBannerTimer />
+              <header className={cn(
+                "w-full transition-all duration-300 px-6 py-4 flex items-center justify-between",
+                scrolled ? "bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800" : "bg-transparent"
+              )}>
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={logoImg} 
+                      alt="Logo" 
+                      className="w-full h-full object-contain"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                  <span className="text-xl font-black tracking-tighter uppercase italic">
+                    Você<span className="text-emerald-500">Consistente</span>
+                  </span>
+                </div>
+                <a href={salesLink} target="_blank" rel="noopener noreferrer" className="hidden md:flex">
+                  <Button variant="primary" size="sm">
+                    Quero ser Consistente
+                  </Button>
+                </a>
+              </header>
             </div>
-            <span className="text-xl font-black tracking-tighter uppercase italic">
-              Você<span className="text-emerald-500">Consistente</span>
-            </span>
-          </div>
-          <a href={salesLink} target="_blank" rel="noopener noreferrer" className="hidden md:flex">
-            <Button variant="primary" size="sm">
-              Quero ser Consistente
-            </Button>
-          </a>
-        </header>
   
         {/* Hero Section */}
-        <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden">
+        <section className="relative pt-40 pb-20 md:pt-56 md:pb-32 overflow-hidden">
           {/* Background Glows */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full pointer-events-none opacity-20">
             <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500 rounded-full blur-[120px]" />
