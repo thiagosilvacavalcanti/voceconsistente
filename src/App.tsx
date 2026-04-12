@@ -291,7 +291,10 @@ const TopBannerTimer = () => {
   const seconds = Math.floor((timeLeft % 60000) / 1000);
 
   return (
-    <div className="w-full py-2 px-4 flex items-center justify-center gap-2 text-zinc-900 font-bold text-sm md:text-base bg-amber-500 animate-pulse-slow">
+    <div 
+      className="w-full py-2 px-4 flex items-center justify-center gap-2 text-zinc-900 font-bold text-sm md:text-base bg-amber-500 animate-pulse-slow"
+      style={{ transform: 'translateZ(0)' }}
+    >
       <Clock className="w-4 h-4" />
       <span>DESCONTO VÁLIDO POR:</span>
       <span className="font-black tabular-nums">
@@ -449,7 +452,7 @@ export default function App() {
     const whatsappLink = "http://wa.me/5511966510350";
   
     return (
-      <div className="min-h-screen bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-200">
+      <div className="min-h-[100dvh] bg-zinc-950 text-zinc-100 font-sans selection:bg-emerald-500/30 selection:text-emerald-200 overflow-x-hidden">
         <AnimatePresence>
           {!isAuthorized && (
             <LeadForm onComplete={() => {
@@ -461,13 +464,12 @@ export default function App() {
         </AnimatePresence>
   
         {isAuthorized && (
-          <>
-            {/* Fixed Top Navigation Bar */}
-            <div className="fixed top-0 left-0 right-0 z-[70] flex flex-col">
+          <div className="fixed top-0 left-0 right-0 z-[100] flex flex-col w-full pointer-events-none" style={{ isolation: 'isolate' }}>
+            <div className="pointer-events-auto w-full" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
               <TopBannerTimer />
               <header className={cn(
                 "w-full transition-all duration-300 px-6 py-4 flex items-center justify-between",
-                scrolled ? "bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800" : "bg-transparent"
+                scrolled ? "bg-zinc-950/90 backdrop-blur-md border-b border-zinc-800" : "bg-transparent"
               )}>
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
@@ -489,9 +491,13 @@ export default function App() {
                 </a>
               </header>
             </div>
-  
-        {/* Hero Section */}
-        <section className="relative pt-40 pb-20 md:pt-56 md:pb-32 overflow-hidden">
+          </div>
+        )}
+
+        {isAuthorized && (
+          <main className="relative">
+            {/* Hero Section */}
+            <section className="relative pt-44 pb-20 md:pt-56 md:pb-32 overflow-hidden">
           {/* Background Glows */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-full pointer-events-none opacity-20">
             <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500 rounded-full blur-[120px]" />
@@ -752,16 +758,12 @@ export default function App() {
             Indicadores <span className="text-emerald-500">Exclusivos</span>
           </SectionTitle>
 
-          <div className="flex flex-col items-center gap-12">
-            <a href={salesLink} target="_blank" rel="noopener noreferrer">
-              <Button size="lg" variant="primary">Quero Acesso aos Indicadores</Button>
-            </a>
-
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <motion.div 
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative max-w-4xl w-full rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl"
+              className="relative rounded-3xl overflow-hidden border border-zinc-800 shadow-2xl order-2 lg:order-1"
             >
               <img 
                 src={media2} 
@@ -770,6 +772,51 @@ export default function App() {
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/20 to-transparent pointer-events-none" />
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="space-y-8 order-1 lg:order-2"
+            >
+              {[
+                {
+                  title: "O mercado não se move sozinho",
+                  desc: "Ele é impulsionado pelos setores e pela relação entre eles."
+                },
+                {
+                  title: "Alinhamento e Divergência",
+                  desc: "Identifique quando o mercado está alinhado e quando está divergente, evitando entradas precipitadas."
+                },
+                {
+                  title: "Correlação em Tempo Real",
+                  desc: "Correlação em tempo real entre o índice e os principais setores."
+                },
+                {
+                  title: "Sinais de Precisão",
+                  desc: "Confirmações claras de compra e venda."
+                }
+              ].map((item, i) => (
+                <div key={i} className="flex gap-4 group">
+                  <div className="shrink-0 w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                    <CheckCircle2 className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
+                    <p className="text-zinc-400 leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+
+              <div className="pt-4">
+                <a href={salesLink} target="_blank" rel="noopener noreferrer">
+                  <Button size="lg" variant="primary" className="w-full sm:w-auto">
+                    Quero Acesso aos Indicadores
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </a>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -1007,8 +1054,8 @@ export default function App() {
         </motion.span>
       </div>
 
-        </>
-      )}
-    </div>
-  );
+          </main>
+        )}
+      </div>
+    );
 }
